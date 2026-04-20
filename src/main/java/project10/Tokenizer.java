@@ -1,6 +1,7 @@
 package project10;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Tokenizer {
     private ArrayList<String> keywords = new ArrayList<String>();
@@ -59,35 +60,36 @@ public class Tokenizer {
         this.escapedChars.add("]");
     }
 
-    public String[] tokenize(String line) {
+    public ArrayList<String> tokenize(String file) {
         String escapedLine = "";
-        line = line.replaceAll("/\\*.*?\\*/", "").trim();
-        line = line.replaceAll("\t{1,5}", "^");
-        line = line.replaceAll(" {2,5}", "^");
-        line = line.replaceAll(";", "^;^");
-        line = line.replaceAll("\\(", "^(^");
-        line = line.replaceAll("\\)", "^)^");
-        line = line.replaceAll("\\{", "^{^");
-        line = line.replaceAll("}", "^}^");
+        file = file.replaceAll("/\\*.*?\\*/", "").trim();
+        file = file.replaceAll("\t{1,5}", "^");
+        file = file.replaceAll(" {2,5}", "^");
+        file = file.replaceAll(";", "^;^");
+        file = file.replaceAll("\\(", "^(^");
+        file = file.replaceAll("\\)", "^)^");
+        file = file.replaceAll("\\{", "^{^");
+        file = file.replaceAll("}", "^}^");
 
         for(String keyword : this.keywords) {
-            line = line.replaceAll(keyword + " ", keyword + "^");
+            file = file.replaceAll(keyword + " ", keyword + "^");
         }
 
         for(String symbol : this.symbols) {
             if(this.escapedChars.contains(symbol)) {
                 escapedLine = "\\";
             }
-            line = line.replaceAll(String.format(" %s%s ", escapedLine, symbol), String.format("^%s^", symbol));
+            file = file.replaceAll(String.format(" %s%s ", escapedLine, symbol), String.format("^%s^", symbol));
         }
 
-        line = line.replaceAll("\\^\\^", "^");
-        line = line.replaceAll("\\^ \\^", "^");
+        file = file.replaceAll("\\^\\^", "^");
+        file = file.replaceAll("\\^ \\^", "^");
 
-        if(!line.startsWith("//") || !line.startsWith("/*")) {
-            return line.split("\\^");
+        if(!file.startsWith("//") || !file.startsWith("/*")) {
+            String[] tokens = file.split("\\^");
+            return new ArrayList<String>(Arrays.asList(tokens));
         }
-        return new String[0];
+        return new ArrayList<String>();
     }
 
     private boolean needsEscapeChar(char c) {
